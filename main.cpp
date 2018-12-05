@@ -5,15 +5,30 @@
 
 constexpr GLdouble sceneHeight = 1000;
 constexpr GLdouble sceneWidth = 1000;
-constexpr GLdouble triangleSideWidth = sceneWidth / 6;
+constexpr GLdouble triangleSideWidth = sceneWidth / 12;
+constexpr GLdouble squareDiagonal = triangleSideWidth * 3 * 2;
 const GLdouble triangleHeight = std::sqrt(
 	std::pow(triangleSideWidth, 2) - std::pow(triangleSideWidth / 2, 2));
+
+constexpr double maxExpansionDistance = triangleSideWidth;
+constexpr double minExpansionDistance = 0.0;
+static double expansionDistanceDelta = 1;
+static double expansionDistance = 0;
 
 void init();
 void draw_scene();
 void draw_quater();
 void draw_triangle_tower(unsigned triangle_count);
 void set_random_color();
+
+void redraw(int)
+{
+	if ((expansionDistance += expansionDistanceDelta) > maxExpansionDistance ||
+	expansionDistance < minExpansionDistance)
+		expansionDistanceDelta = -expansionDistanceDelta;
+	draw_scene();
+	glutTimerFunc(100, redraw, 1);
+}
 
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
@@ -23,6 +38,7 @@ int main(int argc, char** argv) {
 	glutCreateWindow("Spinning Triangles");//create widnow, hello title bar
 	init();
 	glutDisplayFunc(draw_scene);//
+	glutTimerFunc(100, redraw, 1);
 	glutMainLoop();//enter main loop and process events
 	return 0;
 }
@@ -43,13 +59,16 @@ void draw_scene(void) {
 	glLoadIdentity();
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	for(unsigned side = 0; side < 4; ++side) {
 	glPushMatrix();
-	glTranslatef(triangleSideWidth * 3, triangleSideWidth * 3, 0.0f);
-	glRotatef(90 * side, 0.0f, 0.0f, 1.0f);
-	draw_quater();
-	glPopMatrix();
+	glTranslatef(squareDiagonal / 2, squareDiagonal / 2, 0.0f);
+	for(unsigned side = 0; side < 4; ++side) {
+		glPushMatrix();
+		glTranslatef(triangleSideWidth * 3, triangleSideWidth * 3, 0.0f);
+		glRotatef(90 * side, 0.0f, 0.0f, 1.0f);
+		draw_quater();
+		glPopMatrix();
 	}
+	glPopMatrix();
 	// The end of scene
 	glFlush();//start processing buffered OpenGL routines
 }
@@ -57,16 +76,19 @@ void draw_quater()
 {
 	glPushMatrix();
 	for (unsigned i = 3; i > 0; --i) {
-	draw_triangle_tower(i);
-	glTranslatef(triangleSideWidth, 0.0f, 0.0f);
+		glTranslatef(expansionDistance * i / 2, 0.0f, 0.0f); //expanding
+		draw_triangle_tower(i);
+		glTranslatef(triangleSideWidth, 0.0f, 0.0f);
 	}
 	glPopMatrix();
 }
 
 void draw_triangle_tower(unsigned int triangle_cout)
 {
+	glPushMatrix();
 	for(unsigned i = 0; i < triangle_cout; ++i) {
 		glPushMatrix();
+		glTranslatef(0.0f, expansionDistance * (i+1) / 2,  0.0f); // expanding
 		set_random_color();
 		glTranslatef(0.0f, triangleSideWidth * i, 0.0f);
 		glBegin(GL_TRIANGLES);
@@ -76,7 +98,7 @@ void draw_triangle_tower(unsigned int triangle_cout)
 		glEnd();
 		glPopMatrix();
 	}
-	glFlush();
+	glPopMatrix();
 }
 
 void set_random_color()
