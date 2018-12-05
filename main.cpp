@@ -11,9 +11,9 @@ const GLdouble triangleHeight = std::sqrt(
 	std::pow(triangleSideWidth, 2) - std::pow(triangleSideWidth / 2, 2));
 
 constexpr double maxExpansionDistance = triangleSideWidth;
-constexpr double minExpansionDistance = 0.0;
+constexpr double minExpansionDistance = triangleSideWidth / 2;
 static double expansionDistanceDelta = 1;
-static double expansionDistance = 0;
+static double expansionDistance = minExpansionDistance;
 
 constexpr double rotationAngleDelta = 10;
 static double rotationAngle = 0;
@@ -23,6 +23,7 @@ void draw_scene();
 void draw_quater();
 void draw_triangle_tower(unsigned triangle_count);
 void set_random_color();
+void rotate_around_center_of_mass();
 void redraw(int);
 
 int main(int argc, char** argv) {
@@ -86,7 +87,7 @@ void draw_triangle_tower(unsigned int triangle_cout)
 		glPushMatrix();
 		set_random_color();
 		glTranslatef(0.0f, triangleSideWidth * i, 0.0f);
-		glRotatef(rotationAngle, 0.0f, 0.0f, 1.0f);
+		rotate_around_center_of_mass();
 		glBegin(GL_TRIANGLES);
 		glVertex2f(0.0f, 0.0f);
 		glVertex2f(0.0f, triangleSideWidth);
@@ -104,6 +105,13 @@ void set_random_color()
 		std::rand() % 10 * 0.1f,
 		std::rand() % 10 * 0.1f,
 		1.0f);
+}
+
+void rotate_around_center_of_mass()
+{
+	glTranslatef(triangleSideWidth / 3, triangleSideWidth / 3, 0.0f);
+	glRotatef(rotationAngle, 0.0f, 0.0f, 1.0f);
+	glTranslatef(-triangleSideWidth / 3, -triangleSideWidth / 3, 0.0f);
 }
 
 void redraw(int)
