@@ -120,8 +120,10 @@ void redraw(int)
 	expansionDistance < minExpansionDistance)
 		expansionDistanceDelta = -expansionDistanceDelta;
 
-	if((rotationAngle += rotationAngleDelta) >= 360)
+	if ((rotationAngle += rotationAngleDelta) >= 360)
 		rotationAngle -= 360;
+	else if (rotationAngle <= 0)
+		rotationAngle += 360;
 
 	draw_scene();
 	glutTimerFunc(100, redraw, 1);
