@@ -15,20 +15,15 @@ constexpr double minExpansionDistance = 0.0;
 static double expansionDistanceDelta = 1;
 static double expansionDistance = 0;
 
+constexpr double rotationAngleDelta = 10;
+static double rotationAngle = 0;
+
 void init();
 void draw_scene();
 void draw_quater();
 void draw_triangle_tower(unsigned triangle_count);
 void set_random_color();
-
-void redraw(int)
-{
-	if ((expansionDistance += expansionDistanceDelta) > maxExpansionDistance ||
-	expansionDistance < minExpansionDistance)
-		expansionDistanceDelta = -expansionDistanceDelta;
-	draw_scene();
-	glutTimerFunc(100, redraw, 1);
-}
+void redraw(int);
 
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
@@ -91,6 +86,7 @@ void draw_triangle_tower(unsigned int triangle_cout)
 		glPushMatrix();
 		set_random_color();
 		glTranslatef(0.0f, triangleSideWidth * i, 0.0f);
+		glRotatef(rotationAngle, 0.0f, 0.0f, 1.0f);
 		glBegin(GL_TRIANGLES);
 		glVertex2f(0.0f, 0.0f);
 		glVertex2f(0.0f, triangleSideWidth);
@@ -108,4 +104,17 @@ void set_random_color()
 		std::rand() % 10 * 0.1f,
 		std::rand() % 10 * 0.1f,
 		1.0f);
+}
+
+void redraw(int)
+{
+	if ((expansionDistance += expansionDistanceDelta) > maxExpansionDistance ||
+	expansionDistance < minExpansionDistance)
+		expansionDistanceDelta = -expansionDistanceDelta;
+
+	if((rotationAngle += rotationAngleDelta) >= 360)
+		rotationAngle -= 360;
+
+	draw_scene();
+	glutTimerFunc(100, redraw, 1);
 }
