@@ -76,7 +76,7 @@ void draw_quater()
 {
 	glPushMatrix();
 	for (unsigned i = 3; i > 0; --i) {
-		glTranslatef(expansionDistance * i / 2, 0.0f, 0.0f); //expanding
+		glTranslatef(expansionDistance, 0.0f, 0.0f); //expanding
 		draw_triangle_tower(i);
 		glTranslatef(triangleSideWidth, 0.0f, 0.0f);
 	}
@@ -87,8 +87,8 @@ void draw_triangle_tower(unsigned int triangle_cout)
 {
 	glPushMatrix();
 	for(unsigned i = 0; i < triangle_cout; ++i) {
+		glTranslatef(0.0f, expansionDistance,  0.0f); // expanding
 		glPushMatrix();
-		glTranslatef(0.0f, expansionDistance * (i+1) / 2,  0.0f); // expanding
 		set_random_color();
 		glTranslatef(0.0f, triangleSideWidth * i, 0.0f);
 		glBegin(GL_TRIANGLES);
