@@ -6,21 +6,20 @@
 
 constexpr GLdouble sceneHeight = 1000;
 constexpr GLdouble sceneWidth = 1000;
-constexpr GLdouble triangleSideWidth = sceneWidth / 12;
-constexpr GLdouble squareDiagonal = triangleSideWidth * 3 * 2;
+constexpr GLfloat triangleSideWidth = static_cast<GLfloat>(sceneWidth / 12);
 const GLdouble triangleHeight = std::sqrt(
 	std::pow(triangleSideWidth, 2) - std::pow(triangleSideWidth / 2, 2));
 
-constexpr double maxExpansionDistance = triangleSideWidth;
-constexpr double minExpansionDistance = triangleSideWidth / 2;
-static double expansionDistanceDelta = 1;
-static double expansionDistance = minExpansionDistance;
+constexpr GLfloat maxExpansionDistance = triangleSideWidth;
+constexpr GLfloat minExpansionDistance = triangleSideWidth / 2;
+static GLfloat expansionDistanceDelta = 1;
+static GLfloat expansionDistance = minExpansionDistance;
 
-constexpr double triangleRotationAngleDelta = 10;
-static double triangleRotationAngle = 0;
+constexpr GLfloat triangleRotationAngleDelta = 10;
+static GLfloat triangleRotationAngle = 0;
 
-constexpr double ringRotationAngleDelta[] = {1, -1, 5};
-static double ringRotationAngle[] = {0, 0, 0};
+constexpr GLfloat ringRotationAngleDelta[] = {1, -1, 5};
+static GLfloat ringRotationAngle[] = {0, 0, 0};
 
 void init();
 void drawScene();
