@@ -137,5 +137,5 @@ void redraw(int)
 	}
 
 	draw_scene();
-	glutTimerFunc(100, redraw, 1);
+	glutTimerFunc(60, redraw, 1);
 }
