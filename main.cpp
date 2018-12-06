@@ -12,7 +12,7 @@ const GLdouble triangleHeight = std::sqrt(
 	std::pow(triangleSideWidth, 2) - std::pow(triangleSideWidth / 2, 2));
 
 constexpr GLfloat maxExpansionDistance = triangleSideWidth;
-constexpr GLfloat minExpansionDistance = triangleSideWidth / 2;
+constexpr GLfloat minExpansionDistance = 0;
 static GLfloat expansionDistanceDelta = 1;
 static GLfloat expansionDistance = minExpansionDistance;
 
@@ -27,6 +27,8 @@ constexpr unsigned rings = 3;
 void init();
 void drawScene();
 void drawRings();
+void rotateRing(unsigned ring);
+void expand(GLfloat x, GLfloat y);
 void drawTriangle(std::mt19937& colorGenerator, GLfloat rotationAngle);
 void setRandomColor(std::mt19937& generator);
 void rotateAroundCenterOfMass(GLfloat rotationAngle);
@@ -75,13 +77,13 @@ void drawRings()
 	glPushMatrix();
 	for (unsigned ring = 0; ring < rings; ++ring) {
 		glPushMatrix();
-		glRotatef(ringRotationAngle[ring], 0.0f, 0.0f, 1.0f);
+		rotateRing(ring);
 		for (unsigned side = 0; side < 4; ++side) {
 			glRotatef(90, 0.0f, 0.0f, 1.0f);
 			for (unsigned triangle = 0; triangle <= ring; ++triangle) {
 				glPushMatrix();
 				glTranslatef(triangleSideWidth * triangle, triangleSideWidth * (ring - triangle), 0.0f);
-				glTranslatef(expansionDistance * (triangle + 1), expansionDistance * (ring + 1 - triangle), 0.0f);
+				expand(expansionDistance * (triangle + 1), expansionDistance * (ring + 1 - triangle));
 				drawTriangle(generator, triangleRotationAngle[ring]);
 				glPopMatrix();
 			}
@@ -89,6 +91,16 @@ void drawRings()
 		glPopMatrix();
 	}
 	glPopMatrix();
+}
+
+void rotateRing(unsigned ring)
+{
+	glRotatef(ringRotationAngle[ring], 0.0f, 0.0f, 1.0f);
+}
+
+void expand(GLfloat x, GLfloat y)
+{
+	glTranslatef(x, y, 0.0f);
 }
 
 void drawTriangle(std::mt19937& colorGenerator, GLfloat rotationAngle)
