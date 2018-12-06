@@ -15,13 +15,20 @@ constexpr double minExpansionDistance = triangleSideWidth / 2;
 static double expansionDistanceDelta = 1;
 static double expansionDistance = minExpansionDistance;
 
-constexpr double rotationAngleDelta = 10;
-static double rotationAngle = 0;
+constexpr double triangleRotationAngleDelta = 10;
+static double triangleRotationAngle = 0;
+
+constexpr double ringRotationAngleDelta[] = {1, -1, 2};
+static double ringRotationAngle[] = {0, 0, 0};
 
 void init();
 void draw_scene();
+void drawInnerRing();
+void drawMiddleRing();
+void drawOuterRing();
 void draw_quater();
 void draw_triangle_tower(unsigned triangle_count);
+void drawTriangle();
 void set_random_color();
 void rotate_around_center_of_mass();
 void redraw(int);
@@ -56,17 +63,56 @@ void draw_scene(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glPushMatrix();
-	glTranslatef(squareDiagonal / 2, squareDiagonal / 2, 0.0f);
-	for(unsigned side = 0; side < 4; ++side) {
-		glPushMatrix();
-		glTranslatef(triangleSideWidth * 3, triangleSideWidth * 3, 0.0f);
-		glRotatef(90 * side, 0.0f, 0.0f, 1.0f);
-		draw_quater();
-		glPopMatrix();
-	}
+	glTranslatef(sceneWidth / 2, sceneHeight / 2, 0.0f);
+	drawInnerRing();
+	drawMiddleRing();
+	drawOuterRing();
 	glPopMatrix();
 	// The end of scene
 	glFlush();//start processing buffered OpenGL routines
+}
+
+void drawInnerRing()
+{
+	glPushMatrix();
+	glRotatef(ringRotationAngle[0], 0.0f, 0.0f, 1.0f);
+	for (unsigned side = 0; side < 4; ++side) {
+		glRotatef(90, 0.0f, 0.0f, 1.0f);
+		drawTriangle();
+	}
+	glPopMatrix();
+}
+
+void drawMiddleRing()
+{
+	glPushMatrix();
+	glRotatef(ringRotationAngle[1], 0.0f, 0.0f, 1.0f);
+	for (unsigned side = 0; side < 4; ++side) {
+		glRotatef(90, 0.0f, 0.0f, 1.0f);
+		for (unsigned triangle = 0; triangle < 2; ++triangle) {
+			glPushMatrix();
+			glTranslatef(triangleSideWidth * triangle, triangleSideWidth * (1 - triangle), 0.0f);
+			drawTriangle();
+			glPopMatrix();
+		}
+	}
+	glPopMatrix();
+}
+
+void drawOuterRing()
+{
+	glPushMatrix();
+	glRotatef(ringRotationAngle[1], 0.0f, 0.0f, 1.0f);
+	for (unsigned side = 0; side < 4; ++side) {
+		glRotatef(90, 0.0f, 0.0f, 1.0f);
+		for (unsigned triangle = 0; triangle < 3; ++triangle) {
+			glPushMatrix();
+			glTranslatef(triangleSideWidth * triangle, triangleSideWidth * (2 - triangle), 0.0f);
+			drawTriangle();
+			glPopMatrix();
+		}
+	}
+	glPopMatrix();
 }
 void draw_quater()
 {
@@ -98,6 +144,19 @@ void draw_triangle_tower(unsigned int triangle_cout)
 	glPopMatrix();
 }
 
+void drawTriangle()
+{
+		glPushMatrix();
+		set_random_color();
+		rotate_around_center_of_mass();
+		glBegin(GL_TRIANGLES);
+		glVertex2f(0.0f, 0.0f);
+		glVertex2f(0.0f, triangleSideWidth);
+		glVertex2f(triangleSideWidth, 0.0f);
+		glEnd();
+		glPopMatrix();
+}
+
 void set_random_color()
 {
 	glColor4f(
@@ -110,7 +169,7 @@ void set_random_color()
 void rotate_around_center_of_mass()
 {
 	glTranslatef(triangleSideWidth / 3, triangleSideWidth / 3, 0.0f);
-	glRotatef(rotationAngle, 0.0f, 0.0f, 1.0f);
+	glRotatef(triangleRotationAngle, 0.0f, 0.0f, 1.0f);
 	glTranslatef(-triangleSideWidth / 3, -triangleSideWidth / 3, 0.0f);
 }
 
@@ -120,10 +179,17 @@ void redraw(int)
 	expansionDistance < minExpansionDistance)
 		expansionDistanceDelta = -expansionDistanceDelta;
 
-	if ((rotationAngle += rotationAngleDelta) >= 360)
-		rotationAngle -= 360;
-	else if (rotationAngle <= 0)
-		rotationAngle += 360;
+	if ((triangleRotationAngle += triangleRotationAngleDelta) >= 360)
+		triangleRotationAngle -= 360;
+	else if (triangleRotationAngle <= 0)
+		triangleRotationAngle += 360;
+
+	for (unsigned ring = 0; ring < 3; ++ring) {
+		if ((ringRotationAngle[ring] += ringRotationAngleDelta[ring]) >= 360)
+		ringRotationAngle[ring] -= 360;
+		else if (ringRotationAngle[ring] <= 0)
+		ringRotationAngle[ring] += 360;
+	}
 
 	draw_scene();
 	glutTimerFunc(100, redraw, 1);
