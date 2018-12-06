@@ -1,6 +1,7 @@
 // Template1.cpp : Defines the entry point for the console application.
 //
 #include <cmath>
+#include <random>
 #include <GL/glut.h>
 
 constexpr GLdouble sceneHeight = 1000;
@@ -24,8 +25,8 @@ static double ringRotationAngle[] = {0, 0, 0};
 void init();
 void draw_scene();
 void drawRings();
-void drawTriangle();
-void set_random_color();
+void drawTriangle(std::mt19937& generator);
+void set_random_color(std::mt19937& generator);
 void rotate_around_center_of_mass();
 void redraw(int);
 
@@ -68,6 +69,7 @@ void draw_scene(void) {
 
 void drawRings()
 {
+	std::mt19937 generator;
 	glPushMatrix();
 	for (unsigned ring = 0; ring < 3; ++ring) {
 		glPushMatrix();
@@ -78,7 +80,7 @@ void drawRings()
 				glPushMatrix();
 				glTranslatef(triangleSideWidth * triangle, triangleSideWidth * (ring - triangle), 0.0f);
 			glTranslatef(expansionDistance * (triangle + 1), expansionDistance * (ring + 1 - triangle), 0.0f);
-				drawTriangle();
+				drawTriangle(generator);
 				glPopMatrix();
 			}
 		}
@@ -87,10 +89,10 @@ void drawRings()
 	glPopMatrix();
 }
 
-void drawTriangle()
+void drawTriangle(std::mt19937& generator)
 {
 		glPushMatrix();
-		set_random_color();
+		set_random_color(generator);
 		rotate_around_center_of_mass();
 		glBegin(GL_TRIANGLES);
 		glVertex2f(0.0f, 0.0f);
@@ -100,12 +102,12 @@ void drawTriangle()
 		glPopMatrix();
 }
 
-void set_random_color()
+void set_random_color(std::mt19937& generator)
 {
 	glColor4f(
-		std::rand() % 10 * 0.1f,
-		std::rand() % 10 * 0.1f,
-		std::rand() % 10 * 0.1f,
+		generator() % 10 * 0.1f,
+		generator() % 10 * 0.1f,
+		generator() % 10 * 0.1f,
 		1.0f);
 }
 
