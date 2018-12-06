@@ -23,11 +23,11 @@ constexpr double ringRotationAngleDelta[] = {1, -1, 5};
 static double ringRotationAngle[] = {0, 0, 0};
 
 void init();
-void draw_scene();
+void drawScene();
 void drawRings();
 void drawTriangle(std::mt19937& generator);
-void set_random_color(std::mt19937& generator);
-void rotate_around_center_of_mass();
+void setRandomColor(std::mt19937& generator);
+void rotateAroundCenterOfMass();
 void redraw(int);
 
 int main(int argc, char** argv) {
@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow("Spinning Triangles");//create widnow, hello title bar
 	init();
-	glutDisplayFunc(draw_scene);//
+	glutDisplayFunc(drawScene);//
 	glutTimerFunc(100, redraw, 1);
 	glutMainLoop();//enter main loop and process events
 	return 0;
@@ -54,7 +54,7 @@ void init(void) {
 	glLoadIdentity();//=1
 }
 
-void draw_scene(void) {
+void drawScene(void) {
 	// The new scene
 	glLoadIdentity();
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -92,8 +92,8 @@ void drawRings()
 void drawTriangle(std::mt19937& generator)
 {
 		glPushMatrix();
-		set_random_color(generator);
-		rotate_around_center_of_mass();
+		setRandomColor(generator);
+		rotateAroundCenterOfMass();
 		glBegin(GL_TRIANGLES);
 		glVertex2f(0.0f, 0.0f);
 		glVertex2f(0.0f, triangleSideWidth);
@@ -102,7 +102,7 @@ void drawTriangle(std::mt19937& generator)
 		glPopMatrix();
 }
 
-void set_random_color(std::mt19937& generator)
+void setRandomColor(std::mt19937& generator)
 {
 	glColor4f(
 		generator() % 10 * 0.1f,
@@ -111,7 +111,7 @@ void set_random_color(std::mt19937& generator)
 		1.0f);
 }
 
-void rotate_around_center_of_mass()
+void rotateAroundCenterOfMass()
 {
 	glTranslatef(triangleSideWidth / 3, triangleSideWidth / 3, 0.0f);
 	glRotatef(triangleRotationAngle, 0.0f, 0.0f, 1.0f);
@@ -136,6 +136,6 @@ void redraw(int)
 		ringRotationAngle[ring] += 360;
 	}
 
-	draw_scene();
+	drawScene();
 	glutTimerFunc(60, redraw, 1);
 }
