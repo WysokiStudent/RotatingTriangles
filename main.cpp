@@ -77,6 +77,7 @@ void drawRings()
 			for (unsigned triangle = 0; triangle <= ring; ++triangle) {
 				glPushMatrix();
 				glTranslatef(triangleSideWidth * triangle, triangleSideWidth * (ring - triangle), 0.0f);
+			glTranslatef(expansionDistance * (triangle + 1), expansionDistance * (ring + 1 - triangle), 0.0f);
 				drawTriangle();
 				glPopMatrix();
 			}
